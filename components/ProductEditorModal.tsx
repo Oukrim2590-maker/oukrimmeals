@@ -17,57 +17,6 @@ const initialFormData: Omit<Product, 'id'> = {
   description: '',
 };
 
-const compressImage = (
-  file: File,
-  maxWidth: number = 800,
-  maxHeight: number = 800,
-  quality: number = 0.7
-): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = (event) => {
-      if (!event.target?.result) {
-        return reject(new Error("FileReader failed to read file."));
-      }
-      const img = new Image();
-      img.src = event.target.result as string;
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        let { width, height } = img;
-
-        if (width > height) {
-          if (width > maxWidth) {
-            height *= maxWidth / width;
-            width = maxWidth;
-          }
-        } else {
-          if (height > maxHeight) {
-            width *= maxHeight / height;
-            height = maxHeight;
-          }
-        }
-
-        canvas.width = width;
-        canvas.height = height;
-
-        const ctx = canvas.getContext('2d');
-        if (!ctx) {
-          return reject(new Error('Could not get canvas context'));
-        }
-
-        ctx.drawImage(img, 0, 0, width, height);
-        
-        const mimeType = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
-        const dataUrl = canvas.toDataURL(mimeType, quality);
-        resolve(dataUrl);
-      };
-      img.onerror = (error) => reject(error);
-    };
-    reader.onerror = (error) => reject(error);
-  });
-};
-
 const ProductEditorModal: React.FC<ProductEditorModalProps> = ({ isOpen, onSave, onClose, product }) => {
   const [formData, setFormData] = useState<ProductFormData>(initialFormData);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -93,27 +42,17 @@ const ProductEditorModal: React.FC<ProductEditorModalProps> = ({ isOpen, onSave,
     }));
   };
 
-  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      try {
-        const compressedImage = await compressImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
         setFormData(prev => ({
           ...prev,
-          image: compressedImage,
+          image: reader.result as string,
         }));
-      } catch (error) {
-        console.error("Failed to compress image, using original", error);
-        alert("فشل ضغط الصورة. سيتم استخدام الصورة الأصلية، وقد يؤدي ذلك إلى مشاكل في الحفظ إذا كانت كبيرة جدًا.");
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setFormData(prev => ({
-            ...prev,
-            image: reader.result as string,
-          }));
-        };
-        reader.readAsDataURL(file);
-      }
+      };
+      reader.readAsDataURL(file);
     }
   };
 

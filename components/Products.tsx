@@ -29,9 +29,6 @@ const Products: React.FC = () => {
       window.localStorage.setItem(PRODUCTS_STORAGE_KEY, JSON.stringify(products));
     } catch (error) {
       console.error("Could not save products to localStorage", error);
-       if (error instanceof DOMException && (error.name === 'QuotaExceededError' || error.name === 'NS_ERROR_DOM_QUOTA_REACHED')) {
-        alert("فشل حفظ التغييرات. مساحة التخزين المحلية ممتلئة. الرجاء محاولة استخدام صور أصغر حجمًا.");
-      }
     }
   }, [products]);
 

@@ -38,9 +38,6 @@ const Meals: React.FC = () => {
       window.localStorage.setItem(MEALS_STORAGE_KEY, JSON.stringify(meals));
     } catch (error) {
       console.error("Could not save meals to localStorage", error);
-      if (error instanceof DOMException && (error.name === 'QuotaExceededError' || error.name === 'NS_ERROR_DOM_QUOTA_REACHED')) {
-        alert("فشل حفظ التغييرات. مساحة التخزين المحلية ممتلئة. الرجاء محاولة استخدام صور أصغر حجمًا.");
-      }
     }
   }, [meals]);
 
