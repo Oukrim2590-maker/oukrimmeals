@@ -6,8 +6,9 @@ export interface Meal {
   ingredients: string;
   calories: number;
   category: 'high-protein' | 'vegetarian' | 'low-carb';
-  rating: number;
-  reviews: number;
+  // FIX: Add optional rating and reviews properties to the Meal interface to resolve type errors.
+  rating?: number;
+  reviews?: number;
 }
 
 export interface Article {
@@ -26,7 +27,8 @@ export interface Product {
   description: string;
 }
 
+// FIX: Add the missing 'Review' interface, which was being imported but not exported.
 export interface Review {
   rating: number;
-  text: string;
+  text?: string;
 }

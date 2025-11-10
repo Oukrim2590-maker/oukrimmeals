@@ -29,8 +29,9 @@ export const getMealRatings = (mealId: number) => {
     return { reviews: [], averageRating: 0, reviewCount: 0 };
   }
 
-  const baseReviewCount = mealData.reviews;
-  const baseRatingTotal = mealData.rating * baseReviewCount;
+  // FIX: Provide default values for optional 'reviews' and 'rating' properties on Meal to prevent runtime errors.
+  const baseReviewCount = mealData.reviews || 0;
+  const baseRatingTotal = (mealData.rating || 0) * baseReviewCount;
 
   const newRatingsTotal = newReviews.reduce((sum, r) => sum + r.rating, 0);
   const newReviewCount = newReviews.length;

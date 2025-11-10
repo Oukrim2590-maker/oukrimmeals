@@ -52,7 +52,7 @@ const Meals: React.FC = () => {
     setMealToEdit(null);
   };
 
-  const handleSaveMeal = (mealData: Omit<Meal, 'id' | 'rating' | 'reviews'> & { id?: number }) => {
+  const handleSaveMeal = (mealData: Omit<Meal, 'id'> & { id?: number }) => {
     if (mealData.id) {
       // Editing existing meal
       setMeals(prevMeals => prevMeals.map(m => m.id === mealData.id ? { ...m, ...mealData } as Meal : m));
@@ -61,8 +61,6 @@ const Meals: React.FC = () => {
       const newMeal: Meal = {
         ...mealData,
         id: Date.now(), // Simple unique ID
-        rating: 0,
-        reviews: 0,
       };
       setMeals(prevMeals => [newMeal, ...prevMeals]);
     }

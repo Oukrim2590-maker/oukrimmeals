@@ -1,6 +1,5 @@
 import React from 'react';
 import { Meal } from '../types';
-import StarRating from './StarRating';
 import { useAdmin } from '../context/AdminContext';
 
 interface MealCardProps {
@@ -39,12 +38,6 @@ const MealCard: React.FC<MealCardProps> = ({ meal, onCardClick, onEdit }) => {
       </div>
       <div className="p-4 md:p-6 flex flex-col flex-grow">
         <h3 className="text-lg md:text-xl font-bold text-green-800 mb-2 flex-grow">{meal.name}</h3>
-        
-        <div className="flex items-center gap-2 text-sm text-gray-500 mb-3">
-          <StarRating rating={meal.rating} />
-          <span className="font-semibold">{meal.rating.toFixed(1)}</span>
-          <span>({meal.reviews})</span>
-        </div>
         
         <div className="mt-auto flex justify-between items-center text-gray-700">
           <span className="font-medium text-sm">السعرات: {meal.calories}</span>

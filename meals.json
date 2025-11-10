@@ -1,0 +1,11 @@
+[
+  {
+    "id": 1,
+    "name": "صدر دجاج مشوي",
+    "image": "https://i.ibb.co/FbP3P4N/chicken-meal.jpg",
+    "price": 30,
+    "ingredients": "صدر دجاج، أرز، خضر",
+    "calories": 450,
+    "category": "high-protein"
+  }
+]
