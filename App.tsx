@@ -12,6 +12,8 @@ import StickyWhatsAppButton from './components/StickyWhatsAppButton';
 import { CartProvider, useCart } from './context/CartContext';
 import CartModal from './components/CartModal';
 import StickyCartButton from './components/StickyCartButton';
+import { AdminProvider } from './context/AdminContext';
+import AdminLoginModal from './components/AdminLoginModal';
 
 const AppContent: React.FC = () => {
   const { isCartOpen, closeCart } = useCart();
@@ -32,6 +34,7 @@ const AppContent: React.FC = () => {
       <StickyWhatsAppButton />
       <StickyCartButton />
       <CartModal isOpen={isCartOpen} onClose={closeCart} />
+      <AdminLoginModal />
     </div>
   );
 };
@@ -39,9 +42,11 @@ const AppContent: React.FC = () => {
 
 const App: React.FC = () => {
   return (
-    <CartProvider>
-      <AppContent />
-    </CartProvider>
+    <AdminProvider>
+      <CartProvider>
+        <AppContent />
+      </CartProvider>
+    </AdminProvider>
   );
 };
 

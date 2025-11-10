@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, useContext, ReactNode, useCallback } from 'react';
 import { Meal, Product } from '../types';
+import { getDataFromStorage, saveDataToStorage } from '../utils/storage';
 
 export interface CartItem {
   id: string;
@@ -40,23 +41,14 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 const CART_STORAGE_KEY = 'oukrim_meals_cart';
 
 export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [cartItems, setCartItems] = useState<CartItem[]>(() => {
-    try {
-      const storedItems = window.localStorage.getItem(CART_STORAGE_KEY);
-      return storedItems ? JSON.parse(storedItems) : [];
-    } catch (error) {
-      console.error("Could not parse cart items from localStorage", error);
-      return [];
-    }
-  });
-
+  const [cartItems, setCartItems] = useState<CartItem[]>(() => getDataFromStorage(CART_STORAGE_KEY, []));
   const [isCartOpen, setIsCartOpen] = useState(false);
 
   const openCart = useCallback(() => setIsCartOpen(true), []);
   const closeCart = useCallback(() => setIsCartOpen(false), []);
 
   useEffect(() => {
-    window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartItems));
+    saveDataToStorage(CART_STORAGE_KEY, cartItems);
   }, [cartItems]);
 
   const addToCart = useCallback((payload: AddToCartPayload) => {

@@ -1,36 +1,17 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { PRODUCTS_DATA } from '../constants';
 import ProductCard from './ProductCard';
 import { Product } from '../types';
 import ProductDetailModal from './ProductDetailModal';
 import ProductEditorModal from './ProductEditorModal';
+import { useAdmin } from '../context/AdminContext';
+import { usePersistentData } from '../hooks/usePersistentData';
 
 const PRODUCTS_STORAGE_KEY = 'oukrim_products_data';
 
 const Products: React.FC = () => {
-  const [products, setProducts] = useState<Product[]>(() => {
-    try {
-      const storedProductsRaw = window.localStorage.getItem(PRODUCTS_STORAGE_KEY);
-      if (storedProductsRaw) {
-        const storedProducts = JSON.parse(storedProductsRaw);
-        if (Array.isArray(storedProducts) && storedProducts.length > 0) {
-          return storedProducts;
-        }
-      }
-      return PRODUCTS_DATA;
-    } catch (error) {
-      console.error("Could not load products from localStorage", error);
-      return PRODUCTS_DATA;
-    }
-  });
-
-  useEffect(() => {
-    try {
-      window.localStorage.setItem(PRODUCTS_STORAGE_KEY, JSON.stringify(products));
-    } catch (error) {
-      console.error("Could not save products to localStorage", error);
-    }
-  }, [products]);
+  const { isAdmin } = useAdmin();
+  const [products, setProducts] = usePersistentData<Product[]>(PRODUCTS_STORAGE_KEY, PRODUCTS_DATA);
 
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
@@ -87,12 +68,14 @@ const Products: React.FC = () => {
             <h2 className="text-3xl font-bold text-gray-800">
               معدات رياضية لتمارينك
             </h2>
-            <button
-              onClick={() => handleOpenEditor(null)}
-              className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors"
-            >
-              إضافة منتج
-            </button>
+            {isAdmin && (
+              <button
+                onClick={() => handleOpenEditor(null)}
+                className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors"
+              >
+                إضافة منتج
+              </button>
+            )}
           </div>
           <div className="relative">
             <button 

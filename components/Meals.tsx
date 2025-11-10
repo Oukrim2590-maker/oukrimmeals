@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { MEALS_DATA } from '../constants';
 import MealCard from './MealCard';
 import { Meal } from '../types';
 import MealDetailModal from './MealDetailModal';
 import MealEditorModal from './MealEditorModal';
+import { useAdmin } from '../context/AdminContext';
+import { usePersistentData } from '../hooks/usePersistentData';
 
 type CategoryKey = 'all' | Meal['category'];
 
@@ -17,29 +19,8 @@ const CATEGORIES: { key: CategoryKey; label: string }[] = [
 const MEALS_STORAGE_KEY = 'oukrim_meals_data';
 
 const Meals: React.FC = () => {
-  const [meals, setMeals] = useState<Meal[]>(() => {
-    try {
-      const storedMealsRaw = window.localStorage.getItem(MEALS_STORAGE_KEY);
-      if (storedMealsRaw) {
-        const storedMeals = JSON.parse(storedMealsRaw);
-        if (Array.isArray(storedMeals) && storedMeals.length > 0) {
-          return storedMeals;
-        }
-      }
-      return MEALS_DATA;
-    } catch (error) {
-      console.error("Could not load meals from localStorage", error);
-      return MEALS_DATA;
-    }
-  });
-
-  useEffect(() => {
-    try {
-      window.localStorage.setItem(MEALS_STORAGE_KEY, JSON.stringify(meals));
-    } catch (error) {
-      console.error("Could not save meals to localStorage", error);
-    }
-  }, [meals]);
+  const { isAdmin } = useAdmin();
+  const [meals, setMeals] = usePersistentData<Meal[]>(MEALS_STORAGE_KEY, MEALS_DATA);
 
   const [activeFilter, setActiveFilter] = useState<CategoryKey>('all');
   const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
@@ -96,12 +77,14 @@ const Meals: React.FC = () => {
             <h2 className="text-3xl font-bold text-gray-800">
               وجباتنا الصحية
             </h2>
-            <button
-              onClick={() => handleOpenEditor(null)}
-              className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors"
-            >
-              إضافة وجبة
-            </button>
+            {isAdmin && (
+              <button
+                onClick={() => handleOpenEditor(null)}
+                className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors"
+              >
+                إضافة وجبة
+              </button>
+            )}
           </div>
           
           <div className="flex justify-center flex-wrap gap-2 md:gap-4 mb-10">

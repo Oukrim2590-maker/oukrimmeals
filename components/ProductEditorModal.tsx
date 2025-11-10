@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Product } from '../types';
 
 type ProductFormData = Omit<Product, 'id'> & { id?: number };
@@ -19,7 +19,6 @@ const initialFormData: Omit<Product, 'id'> = {
 
 const ProductEditorModal: React.FC<ProductEditorModalProps> = ({ isOpen, onSave, onClose, product }) => {
   const [formData, setFormData] = useState<ProductFormData>(initialFormData);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -40,24 +39,6 @@ const ProductEditorModal: React.FC<ProductEditorModalProps> = ({ isOpen, onSave,
       ...prev,
       [name]: isNumber ? Number(value) : value,
     }));
-  };
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData(prev => ({
-          ...prev,
-          image: reader.result as string,
-        }));
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleImageClick = () => {
-    fileInputRef.current?.click();
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -87,25 +68,26 @@ const ProductEditorModal: React.FC<ProductEditorModalProps> = ({ isOpen, onSave,
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">صورة المنتج</label>
-            <div 
-              className="w-full h-48 bg-gray-100 rounded-md flex items-center justify-center border-2 border-dashed border-gray-300 cursor-pointer hover:border-green-500 transition-colors"
-              onClick={handleImageClick}
-            >
-              {formData.image ? (
-                <img src={formData.image} alt="معاينة" className="w-full h-full object-cover rounded-md" />
-              ) : (
-                <span className="text-gray-500">اضغط هنا لاختيار صورة</span>
-              )}
-            </div>
-            <input 
-              type="file" 
-              ref={fileInputRef} 
-              onChange={handleImageChange} 
-              className="hidden"
-              accept="image/*"
+            <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-1">رابط صورة المنتج</label>
+            <input
+              type="url"
+              id="image"
+              name="image"
+              value={formData.image}
+              onChange={handleChange}
+              placeholder="https://example.com/image.jpg"
+              className="w-full p-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
             />
           </div>
+
+          {formData.image && (
+             <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">معاينة الصورة</label>
+              <div className="w-full h-48 bg-gray-100 rounded-md flex items-center justify-center border border-gray-300 overflow-hidden">
+                <img src={formData.image} alt="معاينة" className="w-full h-full object-cover" />
+              </div>
+            </div>
+          )}
 
           <div>
             <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-1">السعر (د.م.)</label>

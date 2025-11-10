@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { CartItem } from '../context/CartContext';
 import { WHATSAPP_LINK } from '../constants';
+import { getDataFromStorage, saveDataToStorage } from '../utils/storage';
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -11,27 +12,21 @@ interface CheckoutModalProps {
 }
 
 const USER_INFO_KEY = 'oukrim_meals_user_info';
+const initialUserInfo = {
+  name: '',
+  address: '',
+  city: '',
+  phone: '',
+};
 
 const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, onOrderConfirmed, cartItems, totalPrice }) => {
-  const [userInfo, setUserInfo] = useState({
-    name: '',
-    address: '',
-    city: '',
-    phone: '',
-  });
+  const [userInfo, setUserInfo] = useState(() => getDataFromStorage(USER_INFO_KEY, initialUserInfo));
   const [errors, setErrors] = useState({ name: false, address: false, city: false });
   const [isOrderSent, setIsOrderSent] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
-        try {
-            const storedInfo = window.localStorage.getItem(USER_INFO_KEY);
-            if (storedInfo) {
-                setUserInfo(JSON.parse(storedInfo));
-            }
-        } catch (error) {
-            console.error("Could not parse user info from localStorage", error);
-        }
+        setUserInfo(getDataFromStorage(USER_INFO_KEY, initialUserInfo));
         // Reset the sent state every time the modal opens
         setIsOrderSent(false);
     }
@@ -60,7 +55,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, onOrderC
         return;
     }
 
-    window.localStorage.setItem(USER_INFO_KEY, JSON.stringify(userInfo));
+    saveDataToStorage(USER_INFO_KEY, userInfo);
 
     let message = "مرحبا Oukrim Meals،\n";
     message += "هذه معلوماتي للطلب:\n";
